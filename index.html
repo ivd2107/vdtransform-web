@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDTransform — Fractional COO y Lean para PyMEs | Nacho Vidal</title>
+<meta name="description" content="Fractional COO y coach ejecutivo para empresas medianas de Chile, Argentina y España. Liderazgo, Lean e IA trabajando adentro, junto a tu equipo.">
+<link rel="canonical" href="https://vdtransform.com/">
+<link rel="alternate" hreflang="es" href="https://vdtransform.com/">
+<link rel="alternate" hreflang="en" href="https://vdtransform.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://vdtransform.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VDTransform">
+<meta property="og:locale" content="es_CL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="VDTransform — Fractional COO y Lean para PyMEs">
+<meta property="og:description" content="Fractional COO y coach ejecutivo para empresas medianas de Chile, Argentina y España. Liderazgo, Lean e IA trabajando adentro, junto a tu equipo.">
+<meta property="og:url" content="https://vdtransform.com/">
+<meta property="og:image" content="https://vdtransform.com/assets/img/og-image-1200x630.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VDTransform — Fractional COO y Lean para PyMEs">
+<meta name="twitter:description" content="Fractional COO y coach ejecutivo para empresas medianas de Chile, Argentina y España.">
+<meta name="twitter:image" content="https://vdtransform.com/assets/img/og-image-1200x630.png">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#1C2951">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/css/vdtransform.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "VDTransform",
+  "url": "https://vdtransform.com/",
+  "image": "https://vdtransform.com/assets/img/og-image-1200x630.png",
+  "description": "Fractional COO y coach ejecutivo para empresas medianas de Chile, Argentina y España. Liderazgo, operación Lean e IA, trabajando adentro junto al equipo.",
+  "founder": {
+    "@type": "Person",
+    "name": "Ignacio Vidal Domínguez",
+    "sameAs": ["https://www.linkedin.com/in/ignaciovidaldominguez"]
+  },
+  "areaServed": ["Chile", "Argentina", "España"],
+  "email": "nacho@vdtransform.com"
+}
+</script>
+</head>
+<body>
+<main>
+
+  <!-- NAV -->
+  <div style="position: sticky; top: 0; z-index: 20; background: #FFFFFF; border-bottom: 1px solid #D5D9E4; display: flex; align-items: center; justify-content: space-between; padding: 16px 64px; position: relative" data-mobile-pad>
+    <img src="/assets/img/logo-header.png" width="255" height="64" alt="VDTransform" style="height: 32px; width: auto; margin-right: 40px">
+    <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-controls="nav-links" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 5h16M2 10h16M2 15h16" stroke="#1C2951" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links" id="nav-links" aria-label="Principal">
+      <a class="navlink" href="#vertice">Programa Vértice</a>
+      <a class="navlink" href="#quien-soy">Quién soy</a>
+      <a class="navlink" href="#para-quien">Para quién</a>
+      <a class="navlink" href="#herramientas">Herramientas</a>
+      <a href="#contacto" style="background: #1C2951; color: #FFFFFF; font-size: 14px; font-weight: 600; padding: 10px 22px; border-radius: 8px">Hablemos</a>
+      <div class="nav-lang" style="display: flex; align-items: center; gap: 8px; border-left: 1px solid #D5D9E4; padding-left: 20px; margin-left: 4px">
+        <a href="/" title="Español" aria-current="page" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #C4A24D; background: #FFFFFF; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; opacity: 1">🇪🇸</a>
+        <a href="/en/" title="English" style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid #D5D9E4; background: #FFFFFF; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; opacity: .5">🇬🇧</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <div style="background: #1C2951; box-sizing: border-box; width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 88px 64px; gap: 48px" data-mobile-pad>
+    <div style="flex: 1 1 480px; min-width: 0; max-width: 620px; display: flex; flex-direction: column; gap: 28px">
+      <h1 data-hero-title style="color: #FFFFFF; font-size: 46px; line-height: 1.15">Tu empresa tiene más para dar. Yo sé cómo desbloquearlo.</h1>
+      <div style="color: #AEB8D6; font-size: 18px; line-height: 1.6">Liderazgo, equipos y operación, transformados al mismo tiempo.</div>
+      <div style="display: flex; align-items: center; gap: 20px; margin-top: 8px; flex-wrap: wrap">
+        <a href="#contacto" style="background: #C4A24D; color: #1C2951; font-size: 15px; font-weight: 700; padding: 16px 28px; border-radius: 8px">Conversemos 30 minutos</a>
+        <a href="#contacto" style="color: #FFFFFF; font-size: 14px; border-bottom: 1px solid #AEB8D6; padding-bottom: 2px">o escribime un mensaje</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px; padding-top: 24px; border-top: 1px solid #33406b">
+        <div style="display: flex; flex-wrap: wrap; gap: 28px">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 22px; font-weight: 700; color: #C4A24D; font-family: Georgia, serif">4x</div>
+            <div style="font-size: 12px; color: #AEB8D6">Revenue en transformaciones reales</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 22px; font-weight: 700; color: #C4A24D; font-family: Georgia, serif">30+</div>
+            <div style="font-size: 12px; color: #AEB8D6">Años liderando equipos y operaciones</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 22px; font-weight: 700; color: #C4A24D; font-family: Georgia, serif">ICF</div>
+            <div style="font-size: 12px; color: #AEB8D6">Coach Ejecutivo certificado</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: #7C89B0">Resultados en Volvo Chile, 2015–2025 (excepto años de trayectoria).</div>
+      </div>
+    </div>
+    <img src="/assets/img/nacho-hero.jpg" width="520" height="520" alt="Ignacio Nacho Vidal Dominguez, Fractional COO" fetchpriority="high" style="width: 260px; height: 260px; object-fit: cover; border-radius: 16px; flex-shrink: 0; border: 1px solid #33406b; box-shadow: 0 24px 48px rgba(0,0,0,0.28)">
+  </div>
+
+  <!-- PROBLEMA -->
+  <div style="padding: 96px 64px; display: flex; flex-direction: column; align-items: center; gap: 48px; background: #FFFFFF" data-mobile-pad>
+    <div style="max-width: 760px; text-align: center; display: flex; flex-direction: column; gap: 20px">
+      <h2 style="font-size: 32px; color: #1C2951">Las organizaciones siempre separan lo que debería ir de la mano.</h2>
+      <div style="font-size: 16px; color: #1E293B; line-height: 1.7">O trabajan la cultura y el liderazgo. O trabajan los procesos y la operación. El resultado es siempre el mismo: las intervenciones no se sostienen, porque no atacan las dos raíces al mismo tiempo.</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; width: 100%; max-width: 900px" data-mobile-cols="1">
+      <div style="background: #F4F6FA; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 16px; font-weight: 700; color: #1C2951">El coaching no llega a la operación</div>
+      </div>
+      <div style="background: #F4F6FA; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 16px; font-weight: 700; color: #1C2951">La consultoría no cambia la cultura</div>
+      </div>
+      <div style="background: #F4F6FA; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 16px; font-weight: 700; color: #1C2951">La formación no produce resultados</div>
+      </div>
+      <div style="background: #F4F6FA; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 16px; font-weight: 700; color: #1C2951">Los datos no empoderan a nadie</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VÉRTICE -->
+  <div id="vertice" style="padding: 96px 64px; background: #F4F6FA; display: flex; flex-direction: column; align-items: center; gap: 56px" data-mobile-pad>
+    <div style="max-width: 640px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px">
+      <img src="/assets/img/vertice-icon.png" width="80" height="80" alt="" loading="lazy" style="width: 40px; height: 40px">
+      <div style="color: #C4A24D; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase">Programa Vértice</div>
+      <h2 style="font-size: 32px; color: #1C2951">Trabaja simultáneamente las tres dimensiones que determinan el desempeño real: liderazgo, operación y digitalización.</h2>
+      <div style="font-size: 16px; color: #1E293B; line-height: 1.7">Metodología Lean para optimizar procesos. Herramientas de IA para digitalizar la operación y democratizar el dato. Coaching ejecutivo para el equipo directivo. Todo integrado en tres etapas: Mapa, Plan y Ejecución, con presencia real dentro de la empresa y un compromiso explícito: nos vamos cuando el equipo puede solo.</div>
+      <div style="font-size: 15px; color: #1C2951; font-style: italic; font-family: Georgia, serif; margin-top: 8px">"Los problemas operacionales casi siempre tienen raíz conversacional."</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; width: 100%; max-width: 1080px" data-mobile-cols="1">
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 36px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; border-top: 4px solid #C4A24D">
+        <div style="color: #C4A24D; font-size: 13px; font-weight: 700; letter-spacing: 1px">01</div>
+        <h3 style="font-size: 22px; color: #1C2951">Vértice Mapa</h3>
+        <div style="font-size: 14px; color: #64748B; line-height: 1.7">Diagnóstico simultáneo de tres dimensiones: operación, madurez digital y liderazgo. Entregable: el Mapa de la Realidad Actual, presentado a la alta dirección.</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 36px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; border-top: 4px solid #C4A24D">
+        <div style="color: #C4A24D; font-size: 13px; font-weight: 700; letter-spacing: 1px">02</div>
+        <h3 style="font-size: 22px; color: #1C2951">Vértice Plan</h3>
+        <div style="font-size: 14px; color: #64748B; line-height: 1.7">A partir del Mapa, definimos el plan de intervención priorizado: qué se ataca primero y con qué equipo.</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 36px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; border-top: 4px solid #C4A24D">
+        <div style="color: #C4A24D; font-size: 13px; font-weight: 700; letter-spacing: 1px">03</div>
+        <h3 style="font-size: 22px; color: #1C2951">Vértice Ejecución</h3>
+        <div style="font-size: 14px; color: #64748B; line-height: 1.7">Intervención simultánea en las tres dimensiones, con el equipo que ya tiene la empresa. Adentro, hasta que el equipo puede solo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFERENCIAL -->
+  <div style="padding: 96px 64px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 40px" data-mobile-pad>
+    <div style="max-width: 700px; text-align: center; display: flex; flex-direction: column; gap: 16px">
+      <h2 style="font-size: 30px; color: #1C2951">Un perfil que el mercado no tenía</h2>
+      <div style="font-size: 16px; color: #1E293B; line-height: 1.7">Hay coaches ejecutivos. Hay consultores de procesos. Hay especialistas en transformación digital. Pero ninguno hace todo junto, al mismo tiempo, desde adentro de la empresa.</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; width: 100%; max-width: 1080px" data-mobile-cols="2">
+      <div style="text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 16px">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Coach Ejecutivo ICF</div>
+        <div style="font-size: 13px; color: #64748B; line-height: 1.6">Certificación internacional. Trabajo directo con el equipo directivo para cambiar la forma de liderar.</div>
+      </div>
+      <div style="text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 16px">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Turnaround real</div>
+        <div style="font-size: 13px; color: #64748B; line-height: 1.6">Más de 30 años transformando empresas en crisis. No teoría: resultados medibles en contextos reales.</div>
+      </div>
+      <div style="text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 16px">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Metodología Lean</div>
+        <div style="font-size: 13px; color: #64748B; line-height: 1.6">Optimización de procesos con foco en eliminar lo que no agrega valor y liberar la capacidad real del equipo.</div>
+      </div>
+      <div style="text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 16px">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Digitalización con IA</div>
+        <div style="font-size: 13px; color: #64748B; line-height: 1.6">Implementación real de herramientas de inteligencia artificial para que cada persona tenga la información que necesita.</div>
+      </div>
+    </div>
+    <div style="font-size: 16px; color: #1C2951; font-weight: 600; max-width: 640px; text-align: center; margin-top: 8px">La mayoría separa la consultoría de operaciones del coaching. Acá van juntos.</div>
+  </div>
+
+  <!-- QUIÉN SOY -->
+  <div id="quien-soy" style="padding: 96px 64px; display: flex; flex-direction: column; align-items: center; gap: 40px; background: #FFFFFF" data-mobile-pad>
+    <div style="display: flex; align-items: center; gap: 28px; width: 100%; max-width: 760px">
+      <img src="/assets/img/nacho-perfil.jpg" width="240" height="240" alt="Ignacio Vidal Domínguez" style="width: 120px; height: 120px; object-fit: cover; object-position: 50% 20%; border-radius: 50%; flex-shrink: 0">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="color: #C4A24D; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase">Quién soy</div>
+        <h2 style="font-size: 30px; color: #1C2951; margin: 0">Ignacio Vidal Domínguez</h2>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; width: 100%; max-width: 760px; gap: 24px">
+      <div style="font-size: 15px; color: #1E293B; line-height: 1.8; display: flex; flex-direction: column; gap: 16px">
+        <div>Antes de que el liderazgo humano se pusiera de moda, yo ya era el directivo al que la gente buscaba cuando tenía un problema que no podía llevar a nadie más. No porque leí un libro sobre cultura organizacional, sino porque siempre creí que la única manera real de crecer es confiando genuinamente en las personas.</div>
+        <div>Lo llevé a la práctica en cada empresa donde trabajé, y los resultados fueron siempre los mismos: equipos que dejaban de esperar instrucciones y empezaban a traer soluciones.</div>
+        <div>Ese mismo enfoque sostuvo los números. Al frente del P&amp;L completo de Volvo Chile (14 concesionarios, 250 colaboradores), definí y ejecuté la estrategia de expansión: aprobé una inversión de USD 30 millones para duplicar la red de 7 a 14 puntos, y la participación de mercado pasó de cerca de 8% a casi 20%. Ninguno de esos números salió de una planilla: salieron de equipos que dejaron de esperar instrucciones.</div>
+        <div>Con el tiempo encontré en el coaching ejecutivo la metodología que le ponía nombre a lo que siempre hice de manera intuitiva. Me certifiqué como Coach Ejecutivo en ICF y completé un postgrado en Gestión del Equilibrio Organizacional. No para cambiar mi manera de trabajar, sino para profundizarla.</div>
+        <div>Hoy ofrezco lo que el mercado no tenía: entrar a una organización como Fractional COO con formación en coaching ejecutivo, y trabajar simultáneamente el liderazgo, la operación y la digitalización completa. La promesa es simple: cuando terminamos, el equipo puede solo.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px">
+        <div style="display: flex; flex-wrap: wrap; gap: 32px">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 26px; font-weight: 700; color: #1C2951; font-family: Georgia, serif">4x</div>
+            <div style="font-size: 13px; color: #64748B">Facturación y rentabilidad cuadruplicadas</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 26px; font-weight: 700; color: #1C2951; font-family: Georgia, serif">#7 → #1</div>
+            <div style="font-size: 13px; color: #64748B">En satisfacción de clientes</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 26px; font-weight: 700; color: #1C2951; font-family: Georgia, serif">USD 30M</div>
+            <div style="font-size: 13px; color: #64748B">Inversión aprobada, red de 7 a 14 puntos</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 26px; font-weight: 700; color: #1C2951; font-family: Georgia, serif">8% → 20%</div>
+            <div style="font-size: 13px; color: #64748B">Participación de mercado</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 26px; font-weight: 700; color: #1C2951; font-family: Georgia, serif">30+</div>
+            <div style="font-size: 13px; color: #64748B">Años en operaciones industriales</div>
+          </div>
+        </div>
+        <div style="font-size: 12px; color: #94A3B8">Resultados en Volvo Chile, 2015–2025 (excepto años de trayectoria).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALERÍA -->
+  <div style="padding: 56px 64px 0; display: flex; flex-direction: column; align-items: center; gap: 32px; background: #FFFFFF" data-mobile-pad>
+    <h2 style="font-size: 24px; color: #1C2951; text-align: center">El trabajo real sucede adentro</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%" data-mobile-gallery>
+      <img src="/assets/img/nacho-microfono.jpg" width="900" height="600" loading="lazy" alt="Nacho Vidal hablando con micrófono en Volvo Day Iquique" style="width: 100%; height: 300px; object-fit: cover; object-position: 20% 30%; display: block">
+      <img src="/assets/img/nacho-escenario.jpg" width="900" height="600" loading="lazy" alt="Nacho Vidal en escenario Enabus 2025" style="width: 100%; height: 300px; object-fit: cover; display: block">
+      <img src="/assets/img/nacho-terreno.jpg" width="700" height="969" loading="lazy" alt="Nacho Vidal en terreno con equipo y vehículos Volvo" style="width: 100%; height: 300px; object-fit: cover; display: block">
+      <img src="/assets/img/nacho-certificado.jpg" width="900" height="675" loading="lazy" alt="Entregando un certificado al equipo" style="width: 100%; height: 300px; object-fit: cover; display: block">
+    </div>
+  </div>
+
+  <!-- PARA QUIÉN -->
+  <div id="para-quien" style="padding: 96px 64px; background: #F4F6FA; display: flex; flex-direction: column; align-items: center; gap: 40px" data-mobile-pad>
+    <div style="max-width: 700px; text-align: center; display: flex; flex-direction: column; gap: 16px">
+      <h2 style="font-size: 30px; color: #1C2951">Para quién es esto</h2>
+      <div style="font-size: 16px; color: #1E293B; line-height: 1.7">Dueños y gerentes de empresas de 15 a 300 empleados en Chile, Argentina y España: manufactura, comercio y distribución, servicios profesionales, minería, construcción. El perfil típico: el fundador de una empresa familiar donde todas las decisiones pasan por él.</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; width: 100%; max-width: 1080px" data-mobile-cols="2">
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; border: 1px solid #D5D9E4">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Expansión que desborda</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; border: 1px solid #D5D9E4">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Resultados por debajo del potencial</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; border: 1px solid #D5D9E4">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Turnaround</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; border: 1px solid #D5D9E4">
+        <div style="font-size: 15px; font-weight: 700; color: #1C2951">Cambio estructural</div>
+      </div>
+    </div>
+    <div style="background: #FFFFFF; border-radius: 16px; padding: 32px 40px; max-width: 700px; border: 1px solid #D5D9E4; text-align: center">
+      <div style="font-size: 14px; font-weight: 700; color: #1C2951; margin-bottom: 8px">Esto no es para vos si...</div>
+      <div style="font-size: 14px; color: #64748B; line-height: 1.7">Buscás un consultor que entregue un informe y se retire. Este trabajo es adentro, con el equipo, con autonomía profesional para hacerlo.</div>
+    </div>
+  </div>
+
+  <!-- HERRAMIENTAS -->
+  <div id="herramientas" style="padding: 96px 64px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 48px" data-mobile-pad>
+    <div style="max-width: 640px; text-align: center; display: flex; flex-direction: column; gap: 16px">
+      <div style="color: #C4A24D; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase">Antes de que conversemos, ¿cómo estás?</div>
+      <h2 style="font-size: 30px; color: #1C2951">Tres números antes de la primera conversación</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; width: 100%; max-width: 980px" data-mobile-cols="1">
+      <a href="/dependencia" style="background: #1C2951; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 17px; font-weight: 700; color: #FFFFFF">Costo de dependencia</div>
+        <div style="font-size: 13px; color: #AEB8D6; line-height: 1.6">Lo que te cuesta ser el cuello de botella de tu propia empresa.</div>
+      </a>
+      <a href="/margen" style="background: #1C2951; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 17px; font-weight: 700; color: #FFFFFF">Margen oculto</div>
+        <div style="font-size: 13px; color: #AEB8D6; line-height: 1.6">El margen que estás dejando sobre la mesa sin verlo.</div>
+      </a>
+      <a href="/desperdicio" style="background: #1C2951; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+        <div style="font-size: 17px; font-weight: 700; color: #FFFFFF">Desperdicio operativo</div>
+        <div style="font-size: 13px; color: #AEB8D6; line-height: 1.6">Cuánto perdés hoy en procesos que nadie audita.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CONTACTO -->
+  <div id="contacto" style="padding: 96px 64px; background: #F4F6FA; display: flex; justify-content: center; gap: 64px; flex-wrap: wrap" data-mobile-pad data-mobile-stack>
+    <div style="max-width: 460px; display: flex; flex-direction: column; gap: 20px">
+      <h2 style="font-size: 30px; color: #1C2951">Conversemos 30 minutos</h2>
+      <div style="font-size: 15px; color: #1E293B; line-height: 1.7">Sin venta directa en la web. Una conversación de 30 minutos para ver si tiene sentido trabajar juntos.</div>
+      <a href="https://calendly.com/vdtransform/30min" target="_blank" rel="noopener" style="background: #C4A24D; color: #1C2951; font-size: 15px; font-weight: 700; padding: 14px 24px; border-radius: 8px; text-align: center; width: fit-content">Reservar 30 minutos en Calendly</a>
+      <div style="font-size: 14px; color: #64748B">nacho@vdtransform.com</div>
+    </div>
+    <form id="contact-form" action="/api/contact" method="post" style="background: #FFFFFF; border-radius: 16px; padding: 36px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; border: 1px solid #D5D9E4">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="name" style="font-size: 13px; font-weight: 600; color: #1E293B">Nombre</label>
+        <input id="name" name="name" type="text" placeholder="Tu nombre" required maxlength="120" autocomplete="name" style="border: 1px solid #D5D9E4; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="email" style="font-size: 13px; font-weight: 600; color: #1E293B">Email</label>
+        <input id="email" name="email" type="email" placeholder="tu@empresa.com" required maxlength="160" autocomplete="email" style="border: 1px solid #D5D9E4; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="message" style="font-size: 13px; font-weight: 600; color: #1E293B">Mensaje</label>
+        <textarea id="message" name="message" placeholder="Contame brevemente tu situación" required maxlength="2000" style="border: 1px solid #D5D9E4; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: 'Inter', sans-serif; height: 80px; resize: none"></textarea>
+      </div>
+      <input type="text" name="company" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px" aria-hidden="true">
+      <div style="display: flex; gap: 8px; align-items: flex-start">
+        <input id="consent" name="consent" type="checkbox" required style="margin-top: 3px">
+        <label for="consent" style="font-size: 12px; color: #64748B; line-height: 1.5">Acepto que VDTransform me contacte y he leído la <a href="/politica-privacidad" style="color:#1C2951;text-decoration:underline">política de privacidad</a>.</label>
+      </div>
+      <p id="contact-form-error" role="alert" tabindex="-1" hidden style="margin:0;font-size:12px;color:#B42318">Tenés que aceptar la política de privacidad para enviar el mensaje.</p>
+      <button type="submit" style="background: #C4A24D; color: #1C2951; font-size: 15px; font-weight: 700; padding: 14px; border: none; border-radius: 8px; cursor: pointer">Enviar</button>
+    </form>
+  </div>
+
+  <!-- MEDIOS DE PAGO -->
+  <div style="padding: 56px 64px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center" data-mobile-pad>
+    <div style="font-size: 13px; font-weight: 700; color: #64748B; letter-spacing: 1px; text-transform: uppercase">Medios de pago</div>
+    <div style="display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center">
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">Visa</div>
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">Mastercard</div>
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">American Express</div>
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">Stripe</div>
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">PayPal</div>
+      <div style="font-size: 14px; color: #1E293B; font-weight: 600">Mercado Pago</div>
+    </div>
+    <div style="font-size: 12px; color: #64748B; max-width: 480px; line-height: 1.6">Pagos procesados de forma segura por cada plataforma. VDTransform no almacena los datos de tu tarjeta.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="background: #1C2951; padding: 48px 64px; display: flex; flex-direction: column; gap: 24px" data-mobile-pad>
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px" data-mobile-stack>
+      <img src="/assets/img/logo-footer.png" width="259" height="60" alt="VDTransform" style="height: 30px; width: auto">
+      <nav style="display: flex; gap: 28px" aria-label="Legal">
+        <a href="https://www.linkedin.com/in/ignaciovidaldominguez" style="color: #AEB8D6; font-size: 13px">LinkedIn</a>
+        <a href="/aviso-legal" style="color: #AEB8D6; font-size: 13px">Aviso legal</a>
+        <a href="/politica-privacidad" style="color: #AEB8D6; font-size: 13px">Política de privacidad</a>
+      </nav>
+    </div>
+    <div style="font-size: 12px; color: #64748B">© 2026 VDTransform · Ignacio Vidal Domínguez · Santiago, Chile</div>
+  </div>
+
+</main>
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>

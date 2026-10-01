@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /gracias
+Disallow: /en/gracias
+
+Sitemap: https://vdtransform.com/sitemap.xml

@@ -1,0 +1,52 @@
+:root{
+  --navy:#1C2951;
+  --navy-light:#33406b;
+  --gold:#C4A24D;
+  --bg-light:#F4F6FA;
+  --gray:#64748B;
+  --text:#1E293B;
+  --border:#D5D9E4;
+  --white:#FFFFFF;
+  --lavender:#AEB8D6;
+  --lavender-dim:#7C89B0;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--white);color:var(--text)}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif;margin:0}
+a{color:var(--navy);text-decoration:none}
+img{max-width:100%}
+.navlink{color:var(--text);font-size:14px;font-weight:500}
+.navlink:hover{color:var(--gold)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* Mobile menu (hidden by default, shown only under 860px via JS toggle) */
+.menu-toggle{display:none}
+.nav-links{display:flex;align-items:center;gap:28px}
+
+@media (max-width:860px){
+  [data-mobile-cols="2"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  [data-mobile-cols="1"]{grid-template-columns:1fr !important}
+  [data-mobile-stack]{flex-direction:column !important}
+  [data-mobile-gallery]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  [data-mobile-pad]{padding-left:32px !important;padding-right:32px !important}
+
+  .menu-toggle{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--white);cursor:pointer}
+  .nav-links{
+    display:none;position:absolute;top:100%;left:0;right:0;background:var(--white);
+    border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start;
+    gap:4px;padding:16px 32px 24px;box-shadow:0 12px 24px rgba(0,0,0,.08)
+  }
+  .nav-links.is-open{display:flex}
+  .nav-links a{padding:10px 0;width:100%}
+  .nav-lang{border-left:none !important;padding-left:0 !important;margin-left:0 !important;padding-top:12px}
+}
+
+@media (max-width:600px){
+  [data-mobile-cols]{grid-template-columns:1fr !important}
+  [data-mobile-gallery]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  h1{font-size:34px !important}
+  [data-hero-title]{font-size:34px !important}
+}
+
+/* Cookie/consent-free site: no third-party scripts, no banner needed. */
