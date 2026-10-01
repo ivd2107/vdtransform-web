@@ -1,16 +1,11 @@
 // Cloudflare Pages Function — receives the contact form POST and sends it by
-// email using the account's Email Routing "send_email" binding.
+// email using the Resend API.
 //
-// Setup needed in the Cloudflare dashboard (cannot be done from this file):
-// 1. Email Routing must be enabled for vdtransform.com, with
-//    nacho@vdtransform.com verified as a destination address.
-// 2. In the Pages project settings > Functions > Bindings, add an
-//    "Email" binding named SEND_EMAIL pointing at nacho@vdtransform.com.
-// 3. Redeploy the Pages project after adding the binding.
-//
-// Reference: https://developers.cloudflare.com/email-routing/email-workers/
-
-import { EmailMessage } from "cloudflare:email";
+// Setup needed:
+// 1. Domain vdtransform.com verified in Resend (DKIM + SPF records added).
+// 2. In the Pages project settings > Environment variables, add a secret
+//    named RESEND_API_KEY with the API key generated in Resend.
+// 3. Redeploy the Pages project after adding the variable.
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
@@ -46,25 +41,30 @@ export async function onRequestPost(context) {
   const lang = referer.includes("/en/") ? "en" : "es";
 
   const subject = `Nuevo contacto desde vdtransform.com — ${name}`;
-  const bodyText = `Nombre: ${name}\nEmail: ${email}\n\nMensaje:\n${message}`;
   const bodyHtml = `<p><strong>Nombre:</strong> ${escapeHtml(name)}</p>
 <p><strong>Email:</strong> ${escapeHtml(email)}</p>
 <p><strong>Mensaje:</strong></p>
 <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`;
 
-  const rawMessage = [
-    `From: "VDTransform Web" <noreply@vdtransform.com>`,
-    `To: nacho@vdtransform.com`,
-    `Reply-To: ${email}`,
-    `Subject: ${subject}`,
-    `Content-Type: text/html; charset="UTF-8"`,
-    "",
-    bodyHtml,
-  ].join("\r\n");
-
   try {
-    const msg = new EmailMessage("noreply@vdtransform.com", "nacho@vdtransform.com", rawMessage);
-    await env.SEND_EMAIL.send(msg);
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "VDTransform Web <noreply@vdtransform.com>",
+        to: "nacho@vdtransform.com",
+        reply_to: email,
+        subject: subject,
+        html: bodyHtml,
+      }),
+    });
+
+    if (!resendResponse.ok) {
+      throw new Error(`Resend API error: ${resendResponse.status}`);
+    }
   } catch (err) {
     return new Response("No se pudo enviar el mensaje. Escribime directo a nacho@vdtransform.com.", { status: 502 });
   }
