@@ -1,0 +1,3 @@
+Contact: mailto:nacho@vdtransform.com
+Preferred-Languages: es, en
+Canonical: https://vdtransform.com/.well-known/security.txt
