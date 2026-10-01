@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Desperdicio Operativo · VDTransform</title>
+<style>
+:root {
+  --navy: #1A2B4A; --navy-dark: #0f1c33;
+  --gold: #B8972A; --gold-light: #d4ac30;
+  --white: #ffffff;
+  --red: #dc2626; --orange: #ea580c; --amber: #d97706; --green: #16a34a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy-dark); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,0.07); background: var(--navy); }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-badge { background: var(--gold); color: var(--navy); font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 4px; }
+.logo-name { font-size: 15px; font-weight: 700; }
+.hdr-num { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
+
+main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 20px; }
+.screen { display: none; width: 100%; max-width: 660px; animation: fadeUp 0.35s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.prog-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 40px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.5s ease; }
+
+.series-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(184,151,42,0.12); border: 1px solid rgba(184,151,42,0.25); color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+h1 { font-size: clamp(26px, 5vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+h1 em { color: var(--gold); font-style: normal; }
+.intro-sub { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.65; margin-bottom: 28px; }
+.intro-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.6); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 34px; border-radius: 8px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,151,42,0.3); }
+.intro-note { margin-top: 20px; font-size: 12px; color: rgba(255,255,255,0.2); }
+
+.q-eyebrow { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.q-title { font-size: clamp(20px, 4vw, 30px); font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
+.q-sub { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.5; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 15px 18px; cursor: pointer; transition: all 0.18s; display: flex; align-items: flex-start; gap: 14px; text-align: left; width: 100%; }
+.opt:hover { border-color: rgba(184,151,42,0.5); background: rgba(184,151,42,0.06); }
+.opt.sel { border-color: var(--gold); background: rgba(184,151,42,0.1); }
+.opt-key { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.18s; margin-top: 1px; }
+.opt.sel .opt-key { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.opt-text { font-size: 15px; color: rgba(255,255,255,0.82); line-height: 1.35; }
+.opt-tag { font-size: 11px; color: rgba(255,255,255,0.32); margin-top: 3px; }
+.opt.sel .opt-text { color: var(--white); font-weight: 600; }
+.btn-next { margin-top: 22px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: all 0.28s; }
+.btn-next.vis { opacity: 1; pointer-events: all; transform: translateY(0); }
+.btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+.btn-outline:hover { background: var(--gold); color: var(--navy); }
+
+.email-check { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.check-icon { width: 38px; height: 38px; border-radius: 50%; background: rgba(22,163,74,0.15); border: 2px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.check-label { font-size: 13px; color: rgba(255,255,255,0.45); }
+h2 { font-size: clamp(22px,4vw,34px); font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+.email-sub { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 24px; line-height: 1.55; }
+.blur-preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px 20px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.bp-label { font-size: 12px; color: var(--gold); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+.bp-val { font-size: 34px; font-weight: 900; filter: blur(8px); }
+.bp-lock { font-size: 28px; }
+.email-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.e-input { flex: 1; min-width: 180px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 13px 16px; font-size: 15px; color: var(--white); outline: none; transition: border-color 0.2s; }
+.e-input::placeholder { color: rgba(255,255,255,0.25); }
+.e-input:focus { border-color: var(--gold); }
+.e-err { color: #f87171; font-size: 12px; display: none; margin-top: 6px; }
+.privacy { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 8px; }
+
+/* RESULTS */
+.res-top { text-align: center; margin-bottom: 28px; }
+.res-eyebrow { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+.cost-display { font-size: clamp(38px, 6vw, 56px); font-weight: 800; line-height: 1.02; margin-bottom: 6px; letter-spacing: -0.5px; }
+.cost-period { font-size: 15px; color: rgba(255,255,255,0.45); margin-bottom: 18px; }
+.res-verdict { font-size: clamp(17px, 3vw, 22px); font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+.res-desc { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 520px; margin: 0 auto; }
+
+.margin-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 22px 24px; margin: 22px 0; }
+.mb-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.38); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
+.mb-row { margin-bottom: 16px; }
+.mb-row:last-child { margin-bottom: 0; }
+.mb-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+.mb-name { font-size: 13px; color: rgba(255,255,255,0.7); }
+.mb-val { font-size: 14px; font-weight: 700; }
+.mb-track { height: 8px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
+.mb-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.1s cubic-bezier(0.4,0,0.2,1); }
+.mb-desc { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 5px; line-height: 1.4; }
+.total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 14px; }
+.total-lbl { font-size: 14px; font-weight: 700; }
+.total-val { font-size: 20px; font-weight: 900; color: var(--gold); }
+
+.margin-pts { background: linear-gradient(135deg, rgba(184,151,42,0.1), rgba(184,151,42,0.03)); border: 1px solid rgba(184,151,42,0.22); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+.mp-row { display: flex; align-items: center; gap: 16px; }
+.mp-icon { font-size: 30px; }
+.mp-label { font-size: 11px; color: var(--gold); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
+.mp-val { font-size: 26px; font-weight: 900; color: var(--gold); }
+.mp-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+
+/* COMPARATIVA por cohorte */
+.compare-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 22px 24px; margin: 22px 0; }
+.cmp-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.38); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.cmp-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 14px; line-height: 1.5; }
+.cmp-cohort { display: flex; gap: 10px; margin-bottom: 26px; }
+.cmp-stat { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 12px 14px; }
+.cmp-stat .lbl { font-size: 10.5px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.cmp-stat .num { font-size: 20px; font-weight: 800; }
+.cmp-track { position: relative; display: flex; height: 10px; border-radius: 5px; }
+.cmp-zone { flex: 1; height: 100%; }
+.cmp-zone.z-green { background: #16a34a; border-radius: 5px 0 0 5px; }
+.cmp-zone.z-amber { background: #d97706; }
+.cmp-zone.z-orange { background: #ea580c; }
+.cmp-zone.z-red { background: #dc2626; border-radius: 0 5px 5px 0; }
+.cmp-avg { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 2px; height: 20px; background: rgba(255,255,255,0.55); }
+.cmp-avg-lbl { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-size: 9.5px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+.cmp-marker { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); transition: left 1.1s cubic-bezier(0.4,0,0.2,1); text-align: center; z-index: 2; }
+.cmp-dot { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--navy-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.45); margin: 0 auto; }
+.cmp-flag { font-size: 10px; font-weight: 700; color: var(--white); background: var(--navy); border: 1px solid rgba(255,255,255,0.22); padding: 3px 8px; border-radius: 10px; margin-top: 8px; white-space: nowrap; }
+.cmp-labels { display: flex; justify-content: space-between; margin-top: 28px; font-size: 11px; color: rgba(255,255,255,0.38); }
+.cmp-bench { display: flex; gap: 12px; align-items: flex-start; background: rgba(184,151,42,0.08); border: 1px solid rgba(184,151,42,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 20px; }
+.cmp-bench-icon { font-size: 20px; flex-shrink: 0; }
+.cmp-bench-text { font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.55; }
+.cmp-bench-text strong { color: var(--white); }
+.cmp-src { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 6px; }
+
+.changes { margin-bottom: 22px; }
+.ch-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.38); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.ch-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.ch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-top: 7px; flex-shrink: 0; }
+.ch-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+
+.cta-box { border-radius: 12px; padding: 22px 24px; margin-bottom: 14px; }
+.cta-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.cta-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+.cta-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.5; }
+.cta-btn { display: inline-flex; align-items: center; gap: 7px; padding: 12px 24px; border-radius: 7px; font-weight: 700; font-size: 14px; text-decoration: none; transition: all 0.2s; }
+.cta-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.series-nav { margin-top: 14px; font-size: 12px; color: rgba(255,255,255,0.3); display: flex; flex-direction: column; gap: 4px; }
+.series-nav a { color: rgba(184,151,42,0.7); text-decoration: none; }
+
+footer { text-align: center; padding: 16px; font-size: 11px; color: rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.05); }
+footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+
+@media(max-width:540px) {
+  .header { padding: 12px 16px; }
+  .margin-block, .cta-box, .margin-pts, .compare-block { padding: 16px; }
+  .cmp-cohort { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <span class="logo-badge">VDT</span>
+    <span class="logo-name">VDTransform</span>
+  </div>
+  <div class="hdr-num">Herramienta 3 de 3 · Serie Diagnóstico PyME</div>
+</header>
+
+<main>
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="series-tag">⚙️ Herramienta 3 de 3 · Desperdicio operativo</div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:14px;">Paso 2 · le pone número en dólares a un área de tu Diagnóstico Operacional.</div>
+  <h1>¿Cuánta plata estás <em>tirando a la basura</em> sin verla?</h1>
+  <p class="intro-sub">4 preguntas. 2 minutos. El número en dólares que tu operación pierde cada mes en retrabajo, esperas y procesos que no agregan valor — comparado contra empresas de tu industria, tu tamaño y tu facturación.</p>
+  <div class="intro-chips">
+    <div class="chip">⏱️ 2 minutos</div>
+    <div class="chip">💸 Resultado en USD / mes</div>
+    <div class="chip">🏭 Comparado por cohorte</div>
+    <div class="chip">🔒 Sin spam</div>
+  </div>
+  <button class="btn btn-gold" onclick="start()">Calcular mi desperdicio →</button>
+  <p class="intro-note">Diseñado por Ignacio Vidal Dominguez · Fractional COO · 30 años en operaciones · Lean / VPS</p>
+</div>
+
+<!-- Q0 · INDUSTRIA -->
+<div class="screen" id="s-q0">
+  <div class="prog-bar"><div class="prog-fill" style="width:20%"></div></div>
+  <div class="q-eyebrow">Perfil · 1 de 3 · Tu industria</div>
+  <div class="q-title">¿En qué sector opera tu empresa?</div>
+  <p class="q-sub">El nivel de desperdicio operativo típico cambia mucho según la naturaleza del negocio.</p>
+  <div class="opts" id="opts0">
+    <button class="opt" onclick="pick(0,0,'srv')"><div class="opt-key">A</div><div><div class="opt-text">Servicios profesionales, consultoría o agencia</div></div></button>
+    <button class="opt" onclick="pick(0,1,'mfg')"><div class="opt-key">B</div><div><div class="opt-text">Manufactura, producción o industria</div></div></button>
+    <button class="opt" onclick="pick(0,2,'com')"><div class="opt-key">C</div><div><div class="opt-text">Comercio, distribución o logística</div></div></button>
+    <button class="opt" onclick="pick(0,3,'tec')"><div class="opt-key">D</div><div><div class="opt-text">Tecnología, software o salud</div></div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx0" onclick="goQ(1)">Siguiente →</button>
+</div>
+
+<!-- Q1 · EMPLEADOS -->
+<div class="screen" id="s-q1">
+  <div class="prog-bar"><div class="prog-fill" style="width:40%"></div></div>
+  <div class="q-eyebrow">Perfil · 2 de 3 · Tamaño</div>
+  <div class="q-title">¿Cuántos empleados tiene tu empresa?</div>
+  <p class="q-sub">Incluí empleados directos, no contratistas ocasionales.</p>
+  <div class="opts" id="opts1">
+    <button class="opt" onclick="pick(1,0,'xs')"><div class="opt-key">A</div><div><div class="opt-text">5 a 20 empleados</div></div></button>
+    <button class="opt" onclick="pick(1,1,'sm')"><div class="opt-key">B</div><div><div class="opt-text">21 a 50 empleados</div></div></button>
+    <button class="opt" onclick="pick(1,2,'md')"><div class="opt-key">C</div><div><div class="opt-text">51 a 150 empleados</div></div></button>
+    <button class="opt" onclick="pick(1,3,'lg')"><div class="opt-key">D</div><div><div class="opt-text">Más de 150 empleados</div></div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx1" onclick="goQ(2)">Siguiente →</button>
+</div>
+
+<!-- Q2 · FACTURACIÓN -->
+<div class="screen" id="s-q2">
+  <div class="prog-bar"><div class="prog-fill" style="width:65%"></div></div>
+  <div class="q-eyebrow">Perfil · 3 de 3 · Facturación</div>
+  <div class="q-title">¿Cuál es la facturación mensual aproximada?</div>
+  <p class="q-sub">Solo el orden de magnitud, para calibrar el impacto en tu escala.</p>
+  <div class="opts" id="opts2">
+    <button class="opt" onclick="pick(2,0,'f1')"><div class="opt-key">A</div><div><div class="opt-text">Menos de USD 40K / mes</div></div></button>
+    <button class="opt" onclick="pick(2,1,'f2')"><div class="opt-key">B</div><div><div class="opt-text">USD 40K a 170K / mes</div></div></button>
+    <button class="opt" onclick="pick(2,2,'f3')"><div class="opt-key">C</div><div><div class="opt-text">USD 170K a 500K / mes</div></div></button>
+    <button class="opt" onclick="pick(2,3,'f4')"><div class="opt-key">D</div><div><div class="opt-text">Más de USD 500K / mes</div></div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx2" onclick="goQ(3)">Siguiente →</button>
+</div>
+
+<!-- Q3 · MADUREZ DE PROCESOS -->
+<div class="screen" id="s-q3">
+  <div class="prog-bar"><div class="prog-fill" style="width:88%"></div></div>
+  <div class="q-eyebrow">Diagnóstico · Cómo gestionás la eficiencia</div>
+  <div class="q-title">¿Cómo trabajás hoy la eficiencia de tus procesos?</div>
+  <p class="q-sub">Qué tan sistemático es el modo en que medís y mejorás cómo se hace el trabajo.</p>
+  <div class="opts" id="opts3">
+    <button class="opt" onclick="pick(3,0,0)"><div class="opt-key">A</div><div>
+      <div class="opt-text">Medimos indicadores y mejoramos con método (Lean / mejora continua)</div>
+      <div class="opt-tag">Gestión madura</div></div></button>
+    <button class="opt" onclick="pick(3,1,1)"><div class="opt-key">B</div><div>
+      <div class="opt-text">Tenemos algunos indicadores, pero sin un método sistemático</div>
+      <div class="opt-tag">Gestión parcial</div></div></button>
+    <button class="opt" onclick="pick(3,2,2)"><div class="opt-key">C</div><div>
+      <div class="opt-text">Vamos resolviendo los problemas sobre la marcha</div>
+      <div class="opt-tag">Gestión reactiva</div></div></button>
+    <button class="opt" onclick="pick(3,3,3)"><div class="opt-key">D</div><div>
+      <div class="opt-text">No medimos la eficiencia — se trabaja como siempre se hizo</div>
+      <div class="opt-tag">Sin medición</div></div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx3" onclick="goEmail()">Ver mi resultado →</button>
+</div>
+
+<!-- EMAIL -->
+<div class="screen" id="s-email">
+  <div class="email-check">
+    <div class="check-icon">✓</div>
+    <div class="check-label">Análisis completado — tu resultado está listo</div>
+  </div>
+  <h2>La plata que se va sin que aparezca en ningún número.</h2>
+  <p class="email-sub">Primero, el dato de tu cohorte (gratis). Después, dejá tu email para ver TU número, el desglose y cuánto es recuperable en 90 días.</p>
+  <div style="background:rgba(184,151,42,0.08);border:1px solid rgba(184,151,42,0.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gold);font-weight:700;margin-bottom:6px;">Tu cohorte</div>
+    <div id="cohortTeaser" style="font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.82);">—</div>
+  </div>
+  <div class="blur-preview">
+    <div>
+      <div class="bp-label">Desperdicio operativo estimado / año</div>
+      <div class="bp-val" id="prevBlur">$18.400</div>
+    </div>
+    <div class="bp-lock">🔒</div>
+  </div>
+  <div class="email-row">
+    <input type="email" class="e-input" id="emailInp" placeholder="tu@empresa.com" />
+    <button class="btn btn-gold" onclick="submitEmail()">Ver el número →</button>
+  </div>
+  <div class="e-err" id="eErr">Ingresá un email válido.</div>
+  <p class="privacy">🔒 Sin spam. Podés desuscribirte cuando quieras.</p>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-res">
+  <div class="res-top">
+    <div class="res-eyebrow">Desperdicio operativo estimado por año</div>
+    <div class="cost-display" id="costDisplay">—</div>
+    <div class="cost-period">USD por año · tiempo, reprocesos y procesos que no agregan valor</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px;font-style:italic;">Estimación de orden de magnitud · el número exacto surge del diagnóstico</div>
+    <div class="res-verdict" id="resVerdict"></div>
+    <p class="res-desc" id="resDesc"></p>
+  </div>
+
+  <div class="margin-block">
+    <div class="mb-title">Desglose — dónde se concentra el desperdicio</div>
+    <div class="mb-row">
+      <div class="mb-head">
+        <div class="mb-name">① Tiempo, esperas y retrabajo</div>
+        <div class="mb-val" id="v1" style="color:#ea580c">—</div>
+      </div>
+      <div class="mb-track"><div class="mb-fill" id="f1bar" style="background:#ea580c"></div></div>
+      <div class="mb-desc">Horas-persona que se van en esperar, corregir y rehacer lo que salió mal la primera vez.</div>
+    </div>
+    <div class="mb-row">
+      <div class="mb-head">
+        <div class="mb-name">② Sobre-proceso e inventario quieto</div>
+        <div class="mb-val" id="v2" style="color:#d97706">—</div>
+      </div>
+      <div class="mb-track"><div class="mb-fill" id="f2bar" style="background:#d97706"></div></div>
+      <div class="mb-desc">Hacer de más, controles redundantes, stock o trabajo en curso parado consumiendo capital.</div>
+    </div>
+    <div class="mb-row">
+      <div class="mb-head">
+        <div class="mb-name">③ Movimiento y coordinación</div>
+        <div class="mb-val" id="v3" style="color:#dc2626">—</div>
+      </div>
+      <div class="mb-track"><div class="mb-fill" id="f3bar" style="background:#dc2626"></div></div>
+      <div class="mb-desc">Idas y vueltas, traspasos entre áreas, reuniones y mails para destrabar lo que debería fluir solo.</div>
+    </div>
+    <div class="total-row">
+      <div class="total-lbl">Desperdicio anual estimado</div>
+      <div class="total-val" id="totalVal">—</div>
+    </div>
+  </div>
+
+  <div class="margin-pts">
+    <div class="mp-row">
+      <div class="mp-icon">♻️</div>
+      <div>
+        <div class="mp-label">Recuperable en los primeros 90 días</div>
+        <div class="mp-val" id="recVal">—</div>
+        <div class="mp-sub">parte del desperdicio que se puede eliminar con intervención estructurada, sin invertir en más recursos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARATIVA contra dato real (COPQ) -->
+  <div class="compare-block">
+    <div class="cmp-title">📊 Tu estimación contra el dato real de la industria</div>
+    <div class="cmp-sub">Costo de Mala Calidad (COPQ) medido en estudios de calidad — no una opinión.</div>
+    <div class="cmp-cohort">
+      <div class="cmp-stat">
+        <div class="lbl">Clase mundial (medido)</div>
+        <div class="num" style="color:#16a34a">3–5%</div>
+      </div>
+      <div class="cmp-stat">
+        <div class="lbl">Sin medición (medido)</div>
+        <div class="num" style="color:#C0492F">15–40%</div>
+      </div>
+      <div class="cmp-stat">
+        <div class="lbl">Tu estimación</div>
+        <div class="num" id="cohortYou" style="color:var(--gold-light)">—</div>
+      </div>
+    </div>
+    <div class="cmp-track">
+      <div class="cmp-zone z-green"></div>
+      <div class="cmp-zone z-amber"></div>
+      <div class="cmp-zone z-orange"></div>
+      <div class="cmp-zone z-red"></div>
+      <div class="cmp-marker" id="cmpMarker">
+        <div class="cmp-dot"></div>
+        <div class="cmp-flag">Tu estimación</div>
+      </div>
+    </div>
+    <div class="cmp-labels">
+      <span>Clase mundial · 3–5%</span>
+      <span>Sin medición · 15–40%</span>
+    </div>
+    <div class="cmp-bench">
+      <div class="cmp-bench-icon">🏭</div>
+      <div>
+        <div class="cmp-bench-text" id="cmpBenchText">—</div>
+        <div class="cmp-src">El desperdicio "visible" (scrap + retrabajo) ronda solo ~2% de ventas (APQC). El Costo de Mala Calidad TOTAL —esperas, reprocesos, lo oculto— va de 15–40% sin medición y baja a 3–5% en clase mundial (Quality Digest / tradición ASQ). Tu número exacto surge del diagnóstico.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="changes">
+    <div class="ch-title">Por qué pasa esto</div>
+    <div id="changesList"></div>
+  </div>
+
+  <div class="cta-box" id="ctaBox">
+    <div class="cta-tag" id="ctaTag"></div>
+    <div class="cta-title" id="ctaTitle"></div>
+    <div class="cta-text" id="ctaText"></div>
+    <a class="cta-btn" id="ctaBtn" href="#" target="_blank">—</a>
+    <div class="series-nav">
+      <span>📊 Serie Diagnóstico PyME — las 3 herramientas:</span>
+      <a href="#">① ¿Cuánto cuesta ser el cuello de botella?</a>
+      <a href="#">② ¿Cuánto margen estás dejando sobre la mesa?</a>
+      <span>③ ¿Cuánto desperdicio operativo estás absorbiendo? (estás acá)</span>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>© 2026 VDTransform · <a href="https://www.linkedin.com/in/ignaciovidaldominguez/" target="_blank">Ignacio Vidal Dominguez</a> · Fractional COO · <a href="https://vdtransform.com" target="_blank">vdtransform.com</a></footer>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+const S = { q0: null, q1: null, q2: null, q3: null, email: '' };
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function start() { show('s-q0'); }
+function goQ(n)  { show(`s-q${n}`); }
+function goEmail() {
+  const { total, ind, emp, rev, cohortPct } = calcWaste();
+  document.getElementById('prevBlur').textContent = fmtUSD(total * 12);
+  document.getElementById('cohortTeaser').innerHTML =
+    `El Costo de Mala Calidad medido va de <strong>15–40% de los ingresos</strong> en empresas que nunca lo midieron, y baja a <strong>3–5%</strong> en operaciones clase mundial. ¿Dónde estás vos? Tu número, abajo.`;
+  show('s-email');
+}
+
+function pick(qIdx, optIdx, val) {
+  document.querySelectorAll(`#opts${qIdx} .opt`).forEach(o => o.classList.remove('sel'));
+  document.querySelectorAll(`#opts${qIdx} .opt`)[optIdx].classList.add('sel');
+  S[`q${qIdx}`] = { optIdx, val };
+  document.getElementById(`nx${qIdx}`).classList.add('vis');
+  if (window.innerWidth < 600) setTimeout(() => {
+    if (qIdx < 3) goQ(qIdx + 1);
+    else goEmail();
+  }, 420);
+}
+
+function submitEmail() {
+  const v = document.getElementById('emailInp').value.trim();
+  if (!v || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+    document.getElementById('eErr').style.display = 'block';
+    document.getElementById('emailInp').style.borderColor = '#f87171';
+    return;
+  }
+  document.getElementById('eErr').style.display = 'none';
+  S.email = v;
+  const { total } = calcWaste();
+  sendLead('Desperdicio', v, fmtUSD(total * 12) + '/año');
+  renderResults();
+}
+
+function sendLead(calculadora, email, resultado) {
+  fetch('https://docs.google.com/forms/d/e/1FAIpQLSeu8_8bEf7XqrPRR40qzG1PrC382LgdmFVdZNoaYMfqTEbt-Q/formResponse', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      'entry.976218130': calculadora,
+      'entry.1780489578': email,
+      'entry.943574157': resultado,
+    }),
+  }).catch(() => {});
+}
+
+// ─── PERFIL / COHORTE ─────────────────────────────────
+const REV_MAP   = { f1: 25000, f2: 100000, f3: 330000, f4: 750000 };
+const REV_LABEL = { f1: 'menos de USD 40K/mes', f2: 'USD 40–170K/mes', f3: 'USD 170–500K/mes', f4: 'más de USD 500K/mes' };
+const IND_LABEL = { srv: 'servicios profesionales', mfg: 'manufactura', com: 'comercio o distribución', tec: 'tecnología o salud' };
+const EMP_LABEL = { xs: '5–20', sm: '21–50', md: '51–150', lg: '+150' };
+
+// Desperdicio típico (% de ingresos) en el PROMEDIO de cada industria — centro de la banda de la cohorte
+const IND_WASTE_BASE = { mfg: 0.20, com: 0.16, srv: 0.13, tec: 0.10 };
+// Ajuste por tamaño: empresas más chicas suelen estar menos sistematizadas
+const SIZE_MULT = { xs: 1.12, sm: 1.05, md: 1.0, lg: 0.95 };
+// Cuánto se desvía tu empresa del promedio de su cohorte según madurez de gestión
+const MATURITY_MULT = [0.55, 0.85, 1.20, 1.60]; // 0=madura ... 3=sin medición
+const RECOVERABLE = 0.4;
+
+function calcWaste() {
+  const ind    = S.q0?.val ?? 'srv';
+  const emp    = S.q1?.val ?? 'sm';
+  const rev    = REV_MAP[S.q2?.val] ?? 100000;
+  const matLvl = S.q3?.optIdx ?? 2;
+
+  const cohortPct = IND_WASTE_BASE[ind] * SIZE_MULT[emp];   // promedio de la cohorte
+  let   userPct   = cohortPct * MATURITY_MULT[matLvl];      // tu empresa
+  userPct         = Math.min(userPct, 0.30);                // tope de coherencia (COPQ defendible 15–30%)
+  const total     = Math.round(rev * userPct);
+
+  const comp1 = Math.round(total * 0.45);
+  const comp2 = Math.round(total * 0.32);
+  const comp3 = total - comp1 - comp2;
+  const recoverable = Math.round(total * RECOVERABLE);
+
+  return { ind, emp, rev, matLvl, cohortPct, userPct, total, comp1, comp2, comp3, recoverable };
+}
+
+function fmtNum(n) { return new Intl.NumberFormat('es-CL').format(Math.round(n / 100) * 100); }
+function fmtUSD(n) { return `USD ${fmtNum(n)}`; }
+function pct(x) { return (x * 100).toFixed(0) + '%'; }
+
+// ─── RENDER ───────────────────────────────────────────
+function renderResults() {
+  show('s-res');
+  const { ind, emp, rev, matLvl, cohortPct, userPct, total, comp1, comp2, comp3, recoverable } = calcWaste();
+  const annual = total * 12;
+
+  // Animated counter (anual, protagonista)
+  let cur = 0;
+  const cd = document.getElementById('costDisplay');
+  const iv = setInterval(() => {
+    cur = Math.min(cur + Math.ceil(annual / 40), annual);
+    cd.textContent = fmtUSD(cur);
+    if (cur >= annual) { clearInterval(iv); cd.textContent = fmtUSD(annual); }
+  }, 28);
+  const color = total < 5000 ? '#3E8E5A' : total < 18000 ? '#C99A3B' : total < 45000 ? '#C56B3A' : '#C0492F';
+  cd.style.color = color;
+
+  // Verdict
+  const verdicts = [
+    { max: 4999,  v: 'Tu operación está bastante ajustada.',
+      d: 'El desperdicio operativo es bajo: ya gestionás con método. El foco ahora está en sostenerlo y en escalar sin perder esa disciplina.' },
+    { max: 17999, v: 'Hay desperdicio real, todos los meses, en silencio.',
+      d: 'No es falta de trabajo — es trabajo que no llega al cliente. Con un diagnóstico de procesos y unos pocos cambios, buena parte se recupera en 60-90 días sin gastar más.' },
+    { max: 44999, v: 'El desperdicio ya es estructural, no anecdótico.',
+      d: 'A este nivel, las pérdidas no se arreglan pidiéndole más al equipo. Requieren rediseñar cómo fluye el trabajo: dónde espera, dónde se rehace, dónde se duplica.' },
+    { max: Infinity, v: 'Esta es una de las mayores fugas de tu empresa hoy.',
+      d: 'Con tu escala, cada punto de desperdicio son cientos de miles al año. El potencial de recuperación justifica de sobra un diagnóstico operacional completo.' },
+  ];
+  const vd = verdicts.find(x => total <= x.max);
+  document.getElementById('resVerdict').textContent = vd.v;
+  document.getElementById('resDesc').textContent = vd.d;
+
+  // Bars
+  const maxComp = Math.max(comp1, comp2, comp3, 1);
+  document.getElementById('v1').textContent = fmtUSD(comp1 * 12);
+  document.getElementById('v2').textContent = fmtUSD(comp2 * 12);
+  document.getElementById('v3').textContent = fmtUSD(comp3 * 12);
+  document.getElementById('totalVal').textContent = fmtUSD(annual);
+  setTimeout(() => {
+    document.getElementById('f1bar').style.width = `${(comp1/maxComp)*100}%`;
+    document.getElementById('f2bar').style.width = `${(comp2/maxComp)*100}%`;
+    document.getElementById('f3bar').style.width = `${(comp3/maxComp)*100}%`;
+  }, 200);
+
+  // Recuperable
+  document.getElementById('recVal').textContent = `${fmtUSD(recoverable)} / mes  ·  ${fmtUSD(recoverable*12)} / año`;
+
+  // ── COMPARATIVA CONTRA DATO REAL (COPQ)
+  document.getElementById('cohortYou').textContent = `~${pct(userPct)}`;
+  document.getElementById('cmpBenchText').innerHTML =
+    `Tu nivel estimado de desperdicio total es <strong>~${pct(userPct)}</strong> de los ingresos (~${fmtUSD(annual)}/año). Una operación clase mundial lo tiene en <strong>3–5%</strong>; las que nunca lo midieron, entre <strong>15% y 40%</strong>. La distancia hasta clase mundial es tu oportunidad — y es real, no teórica.`;
+  // Marcador en escala real: 3% (clase mundial) → 40% (sin medición)
+  let cmpPos = Math.round(((userPct * 100 - 3) / (40 - 3)) * 100);
+  cmpPos = Math.max(6, Math.min(94, cmpPos));
+  setTimeout(() => { document.getElementById('cmpMarker').style.left = cmpPos + '%'; }, 350);
+
+  // Por qué pasa
+  const whys = [
+    matLvl >= 2
+      ? 'Sin indicadores de proceso, el desperdicio es invisible: nadie lo ve porque no se mide. Y lo que no se mide, no se gestiona.'
+      : 'Aun midiendo, hay desperdicio que se naturaliza: tareas que "siempre se hicieron así" y que ya nadie cuestiona.',
+    'El desperdicio rara vez es culpa de la gente. Es el sistema el que obliga a esperar, rehacer y coordinar de más. Cambiás el sistema, cambia el resultado.',
+    'La mayor parte se recupera sin invertir en más recursos: no es contratar más, es dejar de perder lo que ya tenés.',
+  ];
+  document.getElementById('changesList').innerHTML = whys.map(t =>
+    `<div class="ch-item"><div class="ch-dot"></div><div class="ch-text">${t}</div></div>`
+  ).join('');
+
+  // CTA
+  const cb = document.getElementById('ctaBox');
+  if (total >= 18000) {
+    cb.style.cssText = 'background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);border-radius:12px;padding:22px 24px;margin-bottom:14px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#f87171">🚨 OPORTUNIDAD DE ALTO IMPACTO</span>`;
+    document.getElementById('ctaTitle').textContent = `${fmtUSD(annual)}/año de desperdicio es plata que ya es tuya.`;
+    document.getElementById('ctaText').textContent =
+      `El Programa Vértice Sprint ataca el desperdicio operativo con diagnóstico Lean en planta (Gemba) y rediseño de procesos. Una llamada de 30 min para ver si aplica a tu caso.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Agendar 30 minutos →';
+    btn.style.cssText = 'background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://calendly.com/ignacio-vdtransform/30min'; // REEMPLAZAR
+  } else if (total >= 5000) {
+    cb.style.cssText = 'background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.22);border-radius:12px;padding:22px 24px;margin-bottom:14px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#fbbf24">📋 VISTA COMPLETA</span>`;
+    document.getElementById('ctaTitle').textContent = 'El desperdicio es una de varias fugas.';
+    document.getElementById('ctaText').textContent =
+      `El Diagnóstico de Salud Operacional integra dependencia, margen y desperdicio en un solo número de oportunidad. 5 minutos, gratis.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Hacer el Diagnóstico completo →';
+    btn.style.cssText = 'background:#d97706;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://vdtransform.com/diagnostico'; // REEMPLAZAR
+  } else {
+    cb.style.cssText = 'background:rgba(22,163,74,0.07);border:1px solid rgba(22,163,74,0.2);border-radius:12px;padding:22px 24px;margin-bottom:14px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#4ade80">✅ OPERACIÓN AJUSTADA</span>`;
+    document.getElementById('ctaTitle').textContent = 'Tu operación desperdicia poco. El próximo paso es escalar sin perder eso.';
+    document.getElementById('ctaText').textContent = `Publicamos 3 veces por semana sobre operaciones y crecimiento para dueños de empresa.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Seguir a Ignacio en LinkedIn →';
+    btn.style.cssText = 'background:#16a34a;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://www.linkedin.com/in/ignaciovidaldominguez/';
+  }
+}
+</script>
+</body>
+</html>

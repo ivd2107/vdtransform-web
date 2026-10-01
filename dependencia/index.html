@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Dependencia Operativa · VDTransform</title>
+<style>
+:root {
+  --navy: #1A2B4A; --navy-dark: #0f1c33;
+  --gold: #B8972A; --gold-light: #d4ac30;
+  --white: #ffffff;
+  --red: #dc2626; --orange: #ea580c; --amber: #d97706; --green: #16a34a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy-dark); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,0.07); background: var(--navy); }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-badge { background: var(--gold); color: var(--navy); font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 4px; }
+.logo-name { font-size: 15px; font-weight: 700; }
+.hdr-num { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 20px; }
+.screen { display: none; width: 100%; max-width: 660px; animation: fadeUp 0.35s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.prog-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 40px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.5s ease; }
+
+.series-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(184,151,42,0.12); border: 1px solid rgba(184,151,42,0.25); color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 20px; }
+h1 { font-size: clamp(26px, 5vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+h1 em { color: var(--gold); font-style: normal; }
+.intro-sub { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.65; margin-bottom: 28px; }
+.intro-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.6); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 34px; border-radius: 8px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,151,42,0.3); }
+.intro-note { margin-top: 20px; font-size: 12px; color: rgba(255,255,255,0.2); }
+
+.q-eyebrow { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.q-title { font-size: clamp(20px, 4vw, 30px); font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
+.q-sub { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 28px; line-height: 1.5; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 15px 18px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 14px; text-align: left; width: 100%; }
+.opt:hover { border-color: rgba(184,151,42,0.5); background: rgba(184,151,42,0.06); }
+.opt.sel { border-color: var(--gold); background: rgba(184,151,42,0.1); }
+.opt-key { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.18s; }
+.opt.sel .opt-key { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.opt-text { font-size: 15px; color: rgba(255,255,255,0.82); line-height: 1.35; }
+.opt.sel .opt-text { color: var(--white); font-weight: 600; }
+.btn-next { margin-top: 22px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: all 0.28s; }
+.btn-next.vis { opacity: 1; pointer-events: all; transform: translateY(0); }
+.btn-outline { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+.btn-outline:hover { background: var(--gold); color: var(--navy); }
+
+/* EMAIL */
+.email-check { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.check-icon { width: 38px; height: 38px; border-radius: 50%; background: rgba(22,163,74,0.15); border: 2px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.check-label { font-size: 13px; color: rgba(255,255,255,0.45); }
+h2 { font-size: clamp(22px,4vw,34px); font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+.email-sub { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 24px; line-height: 1.55; }
+.blur-preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px 20px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; }
+.bp-label { font-size: 12px; color: var(--gold); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+.bp-val { font-size: 34px; font-weight: 900; filter: blur(8px); }
+.bp-lock { font-size: 28px; }
+.email-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.e-input { flex: 1; min-width: 180px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 13px 16px; font-size: 15px; color: var(--white); outline: none; transition: border-color 0.2s; }
+.e-input::placeholder { color: rgba(255,255,255,0.25); }
+.e-input:focus { border-color: var(--gold); }
+.e-err { color: #f87171; font-size: 12px; display: none; margin-top: 6px; }
+.privacy { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 8px; }
+
+/* RESULTS */
+.res-top { text-align: center; margin-bottom: 32px; padding: 36px 24px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; }
+
+.recovery-label { font-size: 12px; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.recovery-title { font-size: clamp(15px,2.5vw,19px); color: rgba(255,255,255,0.55); margin-bottom: 14px; font-weight: 500; }
+
+.annual-main { font-size: clamp(40px, 7vw, 60px); font-weight: 800; line-height: 1.02; margin-bottom: 4px; letter-spacing: -0.5px; }
+.annual-period { font-size: 15px; color: rgba(255,255,255,0.4); margin-bottom: 18px; letter-spacing: 0.5px; }
+
+.divider-or { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
+.divider-or::before, .divider-or::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.07); }
+.divider-or span { font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 1px; }
+
+.monthly-sub { font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.55); }
+.monthly-label { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+
+.res-verdict { font-size: clamp(17px, 2.8vw, 21px); font-weight: 700; margin: 24px 0 10px; line-height: 1.3; }
+.res-desc { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; }
+
+/* DRIVERS */
+.drivers-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 22px 24px; margin: 22px 0; }
+.drivers-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.driver-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+.driver-item:last-child { margin-bottom: 0; }
+.driver-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.driver-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+.driver-text strong { color: var(--white); }
+
+/* COMPARATIVA vs empresas similares */
+.compare-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 22px 24px; margin: 22px 0; }
+.cmp-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.cmp-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 14px; line-height: 1.5; }
+.cmp-cohort { display: flex; gap: 10px; margin-bottom: 26px; }
+.cmp-stat { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 12px 14px; }
+.cmp-stat .lbl { font-size: 10.5px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.cmp-stat .num { font-size: 20px; font-weight: 800; }
+.cmp-track { position: relative; display: flex; height: 10px; border-radius: 5px; }
+.cmp-avg { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 2px; height: 20px; background: rgba(255,255,255,0.55); }
+.cmp-avg-lbl { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-size: 9.5px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+.cmp-zone { flex: 1; height: 100%; }
+.cmp-zone.z-green { background: #16a34a; border-radius: 5px 0 0 5px; }
+.cmp-zone.z-amber { background: #d97706; }
+.cmp-zone.z-orange { background: #ea580c; }
+.cmp-zone.z-red { background: #dc2626; border-radius: 0 5px 5px 0; }
+.cmp-marker { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); transition: left 1.1s cubic-bezier(0.4,0,0.2,1); text-align: center; z-index: 2; }
+.cmp-dot { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--navy-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.45); margin: 0 auto; }
+.cmp-flag { font-size: 10px; font-weight: 700; color: var(--white); background: var(--navy); border: 1px solid rgba(255,255,255,0.22); padding: 3px 8px; border-radius: 10px; margin-top: 8px; white-space: nowrap; }
+.cmp-labels { display: flex; justify-content: space-between; margin-top: 28px; font-size: 11px; color: rgba(255,255,255,0.38); }
+.cmp-bench { display: flex; gap: 12px; align-items: flex-start; background: rgba(184,151,42,0.08); border: 1px solid rgba(184,151,42,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 20px; }
+.cmp-bench-icon { font-size: 20px; flex-shrink: 0; }
+.cmp-bench-text { font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.55; }
+.cmp-bench-text strong { color: var(--white); }
+.cmp-src { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 6px; }
+
+/* WHAT CHANGES */
+.changes { margin-bottom: 22px; }
+.ch-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.ch-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+.ch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-top: 7px; flex-shrink: 0; }
+.ch-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+
+/* CTA */
+.cta-box { border-radius: 12px; padding: 22px 24px; }
+.cta-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.cta-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+.cta-text { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; line-height: 1.5; }
+.cta-btn { display: inline-flex; align-items: center; gap: 7px; padding: 12px 24px; border-radius: 7px; font-weight: 700; font-size: 14px; text-decoration: none; transition: all 0.2s; }
+.cta-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.next-tool { margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.3); }
+
+footer { text-align: center; padding: 16px; font-size: 11px; color: rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.05); }
+footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+
+@media(max-width:540px) {
+  .header { padding: 12px 16px; }
+  .res-top { padding: 24px 16px; }
+  .drivers-block, .cta-box { padding: 16px; }
+  .annual-main { font-size: 54px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <span class="logo-badge">VDT</span>
+    <span class="logo-name">VDTransform</span>
+  </div>
+  <div class="hdr-num">Herramienta 1 de 3 · Serie Diagnóstico PyME</div>
+</header>
+
+<main>
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="series-tag">⚡ Herramienta 1 de 3 · Dependencia operativa</div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:14px;">Paso 2 · le pone número en dólares a un área de tu Diagnóstico Operacional.</div>
+  <h1>¿Cuánto te cuesta ser el <em>cuello de botella</em> de tu empresa?</h1>
+  <p class="intro-sub">5 preguntas. 2 minutos. Un número estimado en dólares — lo que tu empresa puede recuperar cuando el sistema funciona sin depender de vos, calibrado con benchmarks de tu industria y tamaño.</p>
+  <div class="intro-chips">
+    <div class="chip">⏱️ 2 minutos</div>
+    <div class="chip">💸 Resultado en USD / año</div>
+    <div class="chip">🏭 Calibrado por cohorte</div>
+    <div class="chip">🔒 Sin spam</div>
+  </div>
+  <button class="btn btn-gold" onclick="start()">Calcular mi potencial →</button>
+  <p class="intro-note">Diseñado por Ignacio Vidal Dominguez · Fractional COO · 30 años en operaciones · Lean / VPS</p>
+</div>
+
+<!-- Q0: INDUSTRIA -->
+<div class="screen" id="s-q0">
+  <div class="prog-bar"><div class="prog-fill" style="width:18%"></div></div>
+  <div class="q-eyebrow">Perfil · 1 de 3 · Tu industria</div>
+  <div class="q-title">¿En qué sector opera tu empresa?</div>
+  <p class="q-sub">El impacto de la dependencia operativa varía según la naturaleza del negocio.</p>
+  <div class="opts" id="opts0">
+    <button class="opt" onclick="pick(0,0,'srv')">
+      <div class="opt-key">A</div><div class="opt-text">Servicios profesionales, consultoría o agencia</div>
+    </button>
+    <button class="opt" onclick="pick(0,1,'mfg')">
+      <div class="opt-key">B</div><div class="opt-text">Manufactura, producción o industria</div>
+    </button>
+    <button class="opt" onclick="pick(0,2,'com')">
+      <div class="opt-key">C</div><div class="opt-text">Comercio, distribución o logística</div>
+    </button>
+    <button class="opt" onclick="pick(0,3,'tec')">
+      <div class="opt-key">D</div><div class="opt-text">Tecnología, software o salud</div>
+    </button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx0" onclick="goQ(1)">Siguiente →</button>
+</div>
+
+<!-- Q1: EMPLEADOS -->
+<div class="screen" id="s-q1">
+  <div class="prog-bar"><div class="prog-fill" style="width:36%"></div></div>
+  <div class="q-eyebrow">Perfil · 2 de 3 · Tamaño</div>
+  <div class="q-title">¿Cuántos empleados tiene tu empresa?</div>
+  <p class="q-sub">Incluí empleados directos, no contratistas ocasionales.</p>
+  <div class="opts" id="opts1">
+    <button class="opt" onclick="pick(1,0,'xs')"><div class="opt-key">A</div><div class="opt-text">5 a 20 empleados</div></button>
+    <button class="opt" onclick="pick(1,1,'sm')"><div class="opt-key">B</div><div class="opt-text">21 a 50 empleados</div></button>
+    <button class="opt" onclick="pick(1,2,'md')"><div class="opt-key">C</div><div class="opt-text">51 a 150 empleados</div></button>
+    <button class="opt" onclick="pick(1,3,'lg')"><div class="opt-key">D</div><div class="opt-text">Más de 150 empleados</div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx1" onclick="goQ(2)">Siguiente →</button>
+</div>
+
+<!-- Q2: FACTURACIÓN -->
+<div class="screen" id="s-q2">
+  <div class="prog-bar"><div class="prog-fill" style="width:54%"></div></div>
+  <div class="q-eyebrow">Perfil · 3 de 3 · Facturación</div>
+  <div class="q-title">¿Cuál es la facturación mensual aproximada?</div>
+  <p class="q-sub">Solo el orden de magnitud, para calibrar el impacto en tu escala.</p>
+  <div class="opts" id="opts2">
+    <button class="opt" onclick="pick(2,0,'f1')"><div class="opt-key">A</div><div class="opt-text">Menos de USD 40K / mes</div></button>
+    <button class="opt" onclick="pick(2,1,'f2')"><div class="opt-key">B</div><div class="opt-text">USD 40K a 170K / mes</div></button>
+    <button class="opt" onclick="pick(2,2,'f3')"><div class="opt-key">C</div><div class="opt-text">USD 170K a 500K / mes</div></button>
+    <button class="opt" onclick="pick(2,3,'f4')"><div class="opt-key">D</div><div class="opt-text">Más de USD 500K / mes</div></button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx2" onclick="goQ(3)">Siguiente →</button>
+</div>
+
+<!-- Q3: INTERRUPCIONES -->
+<div class="screen" id="s-q3">
+  <div class="prog-bar"><div class="prog-fill" style="width:72%"></div></div>
+  <div class="q-eyebrow">Diagnóstico · 1 de 2 · Tu tiempo directivo</div>
+  <div class="q-title">¿Cuántas veces por semana tu equipo te consulta decisiones que debería resolver solo?</div>
+  <p class="q-sub">Aprobaciones, validaciones, consultas que se frenan esperando tu respuesta.</p>
+  <div class="opts" id="opts3">
+    <button class="opt" onclick="pick(3,0,5)">
+      <div class="opt-key">A</div><div class="opt-text">Menos de 5 — el equipo resuelve la mayoría de forma autónoma</div>
+    </button>
+    <button class="opt" onclick="pick(3,1,15)">
+      <div class="opt-key">B</div><div class="opt-text">Entre 5 y 15 — algunas consultas, un flujo normal</div>
+    </button>
+    <button class="opt" onclick="pick(3,2,28)">
+      <div class="opt-key">C</div><div class="opt-text">Entre 15 y 30 — más de lo que debería, y lo siento</div>
+    </button>
+    <button class="opt" onclick="pick(3,3,45)">
+      <div class="opt-key">D</div><div class="opt-text">Más de 30 — prácticamente todo pasa por mí</div>
+    </button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx3" onclick="goQ(4)">Siguiente →</button>
+</div>
+
+<!-- Q4: CONTINUIDAD -->
+<div class="screen" id="s-q4">
+  <div class="prog-bar"><div class="prog-fill" style="width:88%"></div></div>
+  <div class="q-eyebrow">Diagnóstico · 2 de 2 · Continuidad operativa</div>
+  <div class="q-title">Si te ausentás 5 días sin teléfono, ¿qué le pasa a tu empresa?</div>
+  <p class="q-sub">La pregunta más incómoda — y la más reveladora.</p>
+  <div class="opts" id="opts4">
+    <button class="opt" onclick="pick(4,0,0)">
+      <div class="opt-key">A</div><div class="opt-text">Funciona igual — el equipo es autónomo y tiene sistema</div>
+    </button>
+    <button class="opt" onclick="pick(4,1,1)">
+      <div class="opt-key">B</div><div class="opt-text">Algún problema menor que se resuelve solo</div>
+    </button>
+    <button class="opt" onclick="pick(4,2,2)">
+      <div class="opt-key">C</div><div class="opt-text">Se complica en varios frentes — termino conectado igual</div>
+    </button>
+    <button class="opt" onclick="pick(4,3,3)">
+      <div class="opt-key">D</div><div class="opt-text">Se para — hay decisiones que solo puedo tomar yo</div>
+    </button>
+  </div>
+  <button class="btn btn-outline btn-next" id="nx4" onclick="goEmail()">Ver mi resultado →</button>
+</div>
+
+<!-- EMAIL -->
+<div class="screen" id="s-email">
+  <div class="email-check">
+    <div class="check-icon">✓</div>
+    <div class="check-label">Diagnóstico completado — tu resultado está listo</div>
+  </div>
+  <h2>Un número que probablemente no calculaste antes.</h2>
+  <p class="email-sub">Primero, el dato de tu cohorte. Después, dejá tu email para ver TU número y cuánto puede recuperar tu empresa cuando el sistema deja de depender de vos.</p>
+  <div style="background:rgba(184,151,42,0.08);border:1px solid rgba(184,151,42,0.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gold);font-weight:700;margin-bottom:6px;">Tu cohorte</div>
+    <div id="cohortTeaser" style="font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.82);">—</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.5);font-weight:700;margin-bottom:6px;">Tu rango estimado</div>
+    <div id="emailRange" style="font-size:24px;font-weight:800;color:var(--gold-light);">—</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;">El número exacto, el desglose y el plan de 90 días, al ver tu resultado.</div>
+  </div>
+  <div class="blur-preview">
+    <div>
+      <div class="bp-label">Tu número exacto + plan de 90 días</div>
+      <div class="bp-val" id="prevBlur">$148.000</div>
+    </div>
+    <div class="bp-lock">🔒</div>
+  </div>
+  <div class="email-row">
+    <input type="email" class="e-input" id="emailInp" placeholder="tu@empresa.com" />
+    <button class="btn btn-gold" onclick="submitEmail()">Ver el número →</button>
+  </div>
+  <div class="e-err" id="eErr">Ingresá un email válido.</div>
+  <p class="privacy">🔒 Sin spam. Podés desuscribirte cuando quieras.</p>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-res">
+
+  <div class="res-top">
+    <div class="recovery-label">Tu potencial de recuperación</div>
+    <div class="recovery-title" id="recoveryTitle">Lo que tu empresa puede ganar cuando el sistema funciona sin vos</div>
+
+    <div class="annual-main" id="annualMain">—</div>
+    <div class="annual-period">USD POR AÑO (ESTIMADO)</div>
+    <div id="annualRange" style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);margin-top:6px;">—</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;font-style:italic;">Estimación de orden de magnitud · el número exacto surge del diagnóstico</div>
+
+    <div class="divider-or"><span>equivale a</span></div>
+
+    <div class="monthly-sub" id="monthlySub">—</div>
+    <div class="monthly-label">USD por mes</div>
+
+    <div class="divider-or"><span>podés empezar a recuperar en</span></div>
+
+    <div class="monthly-sub" id="q90Sub">—</div>
+    <div class="monthly-label">los primeros 90 días (estimado)</div>
+
+    <div class="res-verdict" id="resVerdict"></div>
+    <p class="res-desc" id="resDesc"></p>
+  </div>
+
+  <!-- DRIVERS — sin revelar la fórmula -->
+  <div class="drivers-block">
+    <div class="drivers-title">Qué genera este costo en tu empresa</div>
+    <div id="driversList"></div>
+  </div>
+
+  <!-- COMPARATIVA contra dato real -->
+  <div class="compare-block">
+    <div class="cmp-title">📊 Tu dependencia y lo que cuesta — con dato real</div>
+    <div class="cmp-sub">Tu respuesta, contra las consecuencias medidas de la dependencia del dueño.</div>
+    <div class="cmp-cohort">
+      <div class="cmp-stat">
+        <div class="lbl">Tu nivel de dependencia</div>
+        <div class="num" id="cohortYou" style="color:var(--gold-light)">—</div>
+      </div>
+      <div class="cmp-stat">
+        <div class="lbl">Descuento de valor si vendés (medido)</div>
+        <div class="num" style="color:#C0492F">25–35%</div>
+      </div>
+    </div>
+    <div class="cmp-track">
+      <div class="cmp-zone z-green"></div>
+      <div class="cmp-zone z-amber"></div>
+      <div class="cmp-zone z-orange"></div>
+      <div class="cmp-zone z-red"></div>
+      <div class="cmp-marker" id="cmpMarker">
+        <div class="cmp-dot"></div>
+        <div class="cmp-flag">Tu empresa</div>
+      </div>
+    </div>
+    <div class="cmp-labels">
+      <span>Opera sin el dueño</span>
+      <span>Todo depende del dueño</span>
+    </div>
+    <div class="cmp-bench">
+      <div class="cmp-bench-icon">📉</div>
+      <div>
+        <div class="cmp-bench-text" id="cmpBenchText">—</div>
+        <div class="cmp-src">Consecuencias medidas: descuento de valuación por dependencia del dueño (key-person discount, M&A); 33% de los dueños trabaja +50 h/semana (SCORE); solo el 30% de las empresas familiares sobrevive a la 2ª generación (SBA/Gallup). Tu número exacto surge del diagnóstico.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="changes">
+    <div class="ch-title">Qué cambia cuando se resuelve</div>
+    <div id="changesList"></div>
+  </div>
+
+  <div class="cta-box" id="ctaBox">
+    <div class="cta-tag" id="ctaTag"></div>
+    <div class="cta-title" id="ctaTitle"></div>
+    <div class="cta-text" id="ctaText"></div>
+    <a class="cta-btn" id="ctaBtn" href="#" target="_blank">—</a>
+    <div class="next-tool">📊 Próximamente: Herramienta 2 — <em>¿Cuánto margen estás dejando sobre la mesa?</em></div>
+  </div>
+</div>
+
+</main>
+
+<footer>© 2026 VDTransform · <a href="https://www.linkedin.com/in/ignaciovidaldominguez/" target="_blank">Ignacio Vidal Dominguez</a> · Fractional COO · <a href="https://vdtransform.com" target="_blank">vdtransform.com</a></footer>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+const S = { q0: null, q1: null, q2: null, q3: null, q4: null, email: '' };
+
+// ─── NAV ─────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function start()  { show('s-q0'); }
+function goQ(n)   { show(`s-q${n}`); }
+function goEmail() {
+  const { annual } = calcCost();
+  document.getElementById('prevBlur').textContent = fmtUSD(annual);
+  const eLo = Math.round(annual * 0.8 / 1000) * 1000, eHi = Math.round(annual * 1.2 / 1000) * 1000;
+  document.getElementById('emailRange').textContent = `USD ${fmtNum(eLo)} – ${fmtNum(eHi)} / año`;
+  // Teaser con dato real (gratis, antes del email).
+  document.getElementById('cohortTeaser').innerHTML =
+    `Dato real de mercado: una empresa que <strong>depende del dueño</strong> se transa a <strong>4,5–5,5× EBITDA</strong> contra <strong>6–8×</strong> de una que opera con sistema — hasta <strong>35% menos de valor</strong>. ¿Cuánto te cuesta a vos? Tu número, abajo.`;
+  show('s-email');
+}
+
+// ─── PICK ─────────────────────────────────────────────
+function pick(qIdx, optIdx, val) {
+  document.querySelectorAll(`#opts${qIdx} .opt`).forEach(o => o.classList.remove('sel'));
+  document.querySelectorAll(`#opts${qIdx} .opt`)[optIdx].classList.add('sel');
+  S[`q${qIdx}`] = { optIdx, val };
+  document.getElementById(`nx${qIdx}`).classList.add('vis');
+  if (window.innerWidth < 600) setTimeout(() => {
+    if (qIdx < 4) goQ(qIdx + 1);
+    else goEmail();
+  }, 420);
+}
+
+// ─── EMAIL ────────────────────────────────────────────
+function submitEmail() {
+  const v = document.getElementById('emailInp').value.trim();
+  if (!v || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+    document.getElementById('eErr').style.display = 'block';
+    document.getElementById('emailInp').style.borderColor = '#f87171';
+    return;
+  }
+  document.getElementById('eErr').style.display = 'none';
+  S.email = v;
+  const { annual } = calcCost();
+  sendLead('Dependencia', v, fmtUSD(annual) + '/año');
+  renderResults();
+}
+
+function sendLead(calculadora, email, resultado) {
+  fetch('https://docs.google.com/forms/d/e/1FAIpQLSeu8_8bEf7XqrPRR40qzG1PrC382LgdmFVdZNoaYMfqTEbt-Q/formResponse', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      'entry.976218130': calculadora,
+      'entry.1780489578': email,
+      'entry.943574157': resultado,
+    }),
+  }).catch(() => {});
+}
+
+// ─── ECONOMIC MODEL ───────────────────────────────────
+// El recuperable se ancla a la FACTURACIÓN del negocio y se expresa como un
+// porcentaje creíble de ella (entre 1% y 10%), modulado por el nivel de
+// dependencia (consultas + continuidad) y por la industria. Así el número
+// nunca se va de escala respecto del tamaño real de la empresa.
+const REV_ANNUAL = { f1: 240000, f2: 1260000, f3: 4020000, f4: 9000000 }; // punto medio anual por tramo
+const IND_FACTOR = { srv: 1.0, mfg: 1.15, com: 1.0, tec: 0.85 };          // sensibilidad por sector
+
+function calcCost() {
+  const industry = S.q0?.val ?? 'srv';
+  const fac      = S.q2?.val ?? 'f2';
+  const intq     = S.q3?.val ?? 15;
+  const contLvl  = S.q4?.val ?? 2;
+
+  const rev      = REV_ANNUAL[fac] || REV_ANNUAL.f2;
+  const intNorm  = Math.max(0, Math.min(1, (intq - 5) / 40));
+  const contNorm = contLvl / 3;
+  const score    = intNorm * 0.55 + contNorm * 0.45;          // 0..1
+  let pct        = 0.01 + score * 0.09;                       // 1% .. 10%
+  pct            = pct * (IND_FACTOR[industry] || 1.0);
+  pct            = Math.max(0.01, Math.min(0.10, pct));       // tope 1%–10%
+
+  const annual   = Math.round(rev * pct / 500) * 500;
+  const monthly  = Math.round(annual / 12 / 100) * 100;
+  return { monthly, annual, industry, intq, contLvl };
+}
+
+function fmtNum(n) {
+  return new Intl.NumberFormat('es-CL').format(n);
+}
+function fmtUSD(n) {
+  return `USD ${fmtNum(n)}`;
+}
+
+// ─── LABELS POR INDUSTRIA ─────────────────────────────
+const INDUSTRY_LABELS = {
+  srv: 'empresa de servicios',
+  mfg: 'empresa de manufactura',
+  com: 'empresa de comercio',
+  tec: 'empresa de tecnología',
+};
+const INDUSTRY_DRIVERS = {
+  srv: [
+    { icon: '🧠', text: '<strong>Tiempo de liderazgo consumido en operación</strong> — en servicios profesionales, el tiempo del dueño es el activo más valioso. Cada decisión menor que pasa por vos es tiempo que no va a clientes, propuestas o crecimiento.' },
+    { icon: '⏸️', text: '<strong>Proyectos frenados esperando tu aprobación</strong> — en servicios, los cuellos de botella directivos se traducen directamente en demoras al cliente, retrabajo y pérdida de margen.' },
+    { icon: '📉', text: '<strong>Oportunidades no capitalizadas</strong> — mientras gestionás lo urgente, lo estratégico espera. Clientes potenciales, propuestas, mejoras de servicio.' },
+  ],
+  mfg: [
+    { icon: '🏭', text: '<strong>Paradas de producción por falta de decisión</strong> — en manufactura, cada hora de inactividad tiene un costo directo en mano de obra, maquinaria y tiempo de entrega.' },
+    { icon: '🔗', text: '<strong>Cadena de decisiones centralizada</strong> — cuando los supervisores no tienen autonomía para resolver problemas de planta, los escalados al dueño generan cuellos de botella que afectan toda la línea.' },
+    { icon: '📦', text: '<strong>Impacto en clientes y proveedores</strong> — las demoras de decisión en manufactura se traducen en incumplimientos de entrega, multas y pérdida de contratos.' },
+  ],
+  com: [
+    { icon: '🏃', text: '<strong>Velocidad de respuesta al mercado</strong> — en comercio y distribución, las decisiones lentas significan oportunidades perdidas: compras que no se cierran, stocks que no se gestionan, clientes que se van a la competencia.' },
+    { icon: '💬', text: '<strong>Equipo frenado esperando autorización</strong> — cada precio especial, cada excepción, cada devolución que pasa por vos es una cadena de espera que tiene costo directo.' },
+    { icon: '📊', text: '<strong>Gestión reactiva en lugar de proactiva</strong> — sin autonomía del equipo, el dueño gestiona emergencias en lugar de estrategia comercial.' },
+  ],
+  tec: [
+    { icon: '⚡', text: '<strong>Velocidad de ejecución del equipo técnico</strong> — en tecnología, el ritmo es alto y la dependencia del fundador frena sprints, lanzamientos y resolución de bugs críticos.' },
+    { icon: '🎯', text: '<strong>Foco estratégico del CEO/CTO</strong> — el tiempo que el dueño técnico gasta en validar decisiones operativas es tiempo que no va a producto, clientes o inversores.' },
+    { icon: '🔄', text: '<strong>Ciclos de decisión largos en entornos que requieren rapidez</strong> — en tech, la velocidad de iteración es una ventaja competitiva. La dependencia la elimina.' },
+  ],
+};
+
+// ─── RENDER ───────────────────────────────────────────
+function renderResults() {
+  show('s-res');
+  const { monthly, annual, industry, intq, contLvl } = calcCost();
+  const founderLed = (industry === 'srv' && S.q1?.optIdx === 0);
+
+  // Animated counter — el annual es el protagonista
+  let cur = 0;
+  const am = document.getElementById('annualMain');
+  const iv = setInterval(() => {
+    cur = Math.min(cur + Math.ceil(annual / 45), annual);
+    am.textContent = `USD ${fmtNum(cur)}`;
+    if (cur >= annual) { clearInterval(iv); am.textContent = fmtUSD(annual); }
+  }, 24);
+
+  const color = annual < 30000 ? '#3E8E5A' : annual < 80000 ? '#C99A3B' : annual < 180000 ? '#C56B3A' : '#C0492F';
+  am.style.color = color;
+
+  document.getElementById('monthlySub').textContent = fmtUSD(monthly);
+  document.getElementById('monthlySub').style.color = color;
+
+  // Rango estimado pegado al número + lectura de 90 días
+  const rLo = Math.round(annual * 0.8 / 1000) * 1000, rHi = Math.round(annual * 1.2 / 1000) * 1000;
+  document.getElementById('annualRange').textContent = `Rango estimado: USD ${fmtNum(rLo)} – USD ${fmtNum(rHi)}`;
+  const q90 = Math.round(monthly * 3 / 1000) * 1000;
+  document.getElementById('q90Sub').textContent = fmtUSD(q90);
+  document.getElementById('q90Sub').style.color = color;
+
+  // Recovery title personalizado
+  document.getElementById('recoveryTitle').textContent =
+    `Lo que tu ${INDUSTRY_LABELS[industry] || 'empresa'} puede recuperar cuando el sistema funciona sin vos`;
+
+  // Verdict
+  let verdict, desc;
+  if (annual < 30000) {
+    verdict = 'Tu empresa tiene buen nivel de autonomía operativa.';
+    desc = 'El costo es relativamente bajo. El foco ahora debería estar en consolidar el crecimiento, no en resolver problemas de dependencia urgentes. Igual hay margen de mejora en la estructura.';
+  } else if (annual < 80000) {
+    verdict = 'Hay un costo real que probablemente ya sentías, aunque no lo habías puesto en números.';
+    desc = 'Tu tiempo directivo está siendo consumido por cosas que debería resolver el equipo. Eso no se nota en el día a día — pero sí en la fatiga, en las decisiones estratégicas postergadas y en el techo de crecimiento.';
+  } else if (annual < 180000) {
+    verdict = 'Estás pagando un costo alto por operar sin sistema.';
+    desc = 'A este nivel, la dependencia no es un problema de gestión — es un limitante estratégico. Frena el valor del negocio, la calidad de vida del dueño y la capacidad de escalar.';
+  } else {
+    verdict = 'Este es uno de los mayores costos ocultos de tu empresa en este momento.';
+    desc = 'Con operaciones de tu escala, la dependencia operativa tiene un impacto que va mucho más allá del tiempo: define el techo de la empresa, su valor de mercado y tu capacidad de salir cuando quieras.';
+  }
+  // Salida diferenciada para founder-led sano (servicios profesionales chicos)
+  if (founderLed) {
+    verdict = 'En tu tipo de negocio, que mucho pase por vos puede ser parte del modelo — no algo a “arreglar” a la fuerza.';
+    desc = 'En servicios profesionales chicos, muchas veces el dueño es el producto. El riesgo real no es la eficiencia del día a día: es la continuidad si te ausentás y el valor de la empresa el día que quieras delegar, escalar o vender. Ahí es donde construir sistema realmente paga.';
+  }
+  document.getElementById('resVerdict').textContent = verdict;
+  document.getElementById('resDesc').textContent = desc;
+
+  // Drivers por industria — sin revelar fórmula
+  const drivers = INDUSTRY_DRIVERS[industry] || INDUSTRY_DRIVERS['srv'];
+  document.getElementById('driversList').innerHTML = drivers.map(d =>
+    `<div class="driver-item">
+      <div class="driver-icon">${d.icon}</div>
+      <div class="driver-text">${d.text}</div>
+    </div>`
+  ).join('');
+
+  // ── COMPARATIVA CONTRA DATO REAL
+  // Nivel de dependencia derivado de TUS respuestas (no de un benchmark inventado)
+  const intNorm  = Math.max(0, Math.min(1, (intq - 5) / 40));
+  const contNorm = contLvl / 3;
+  const userIndex = Math.round((intNorm * 0.55 + contNorm * 0.45) * 100);
+  const depLabel = userIndex <= 33 ? 'Baja' : userIndex <= 66 ? 'Media' : 'Alta';
+  document.getElementById('cohortYou').textContent = depLabel;
+  document.getElementById('cmpBenchText').innerHTML =
+    `Tu nivel de dependencia hoy es <strong>${depLabel.toLowerCase()}</strong> — y eso tiene consecuencias medidas: una empresa muy dependiente del dueño se transa a <strong>4,5–5,5× EBITDA</strong> contra <strong>6–8×</strong> (hasta <strong>35% menos de valor</strong>); el 33% de los dueños trabaja más de 50 horas por semana; solo el 30% de las empresas familiares llega a la segunda generación. No es ideología anti-dueño — es lo que pasa cuando el sistema no puede funcionar sin vos.`;
+  let cmpPos = Math.max(6, Math.min(94, userIndex));
+  setTimeout(() => { document.getElementById('cmpMarker').style.left = cmpPos + '%'; }, 350);
+
+  // What changes
+  const changes = [
+    intq >= 28
+      ? 'Con un sistema de decisiones claro, tu equipo resuelve el 80% de lo que hoy te consulta. Eso son horas semanales de vuelta a tu agenda — para lo que realmente necesita tu cabeza.'
+      : 'Reducir las consultas innecesarias libera tiempo directivo de alta calidad que hoy está atrapado en lo urgente.',
+    contLvl >= 2
+      ? 'Cuando tu empresa puede funcionar sin tu presencia física, su valor de mercado aumenta. Un negocio que depende del dueño vale mucho menos que uno que funciona con un sistema.'
+      : 'Consolidar la autonomía del equipo protege la operación ante cualquier eventualidad — viajes, crecimiento, delegación.',
+    'El tiempo que recuperás no solo tiene valor económico — cambia la calidad de las decisiones que tomás. Las mejores decisiones vienen de dueños que no están apagando incendios.',
+  ];
+  document.getElementById('changesList').innerHTML = changes.map(t =>
+    `<div class="ch-item"><div class="ch-dot"></div><div class="ch-text">${t}</div></div>`
+  ).join('');
+
+  // CTA
+  const cb = document.getElementById('ctaBox');
+  if (founderLed) {
+    cb.style.cssText = 'background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.22);border-radius:12px;padding:22px 24px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#fbbf24">📋 TU CASO ES PARTICULAR</span>`;
+    document.getElementById('ctaTitle').textContent = 'Tu desafío no es eficiencia: es continuidad y valor.';
+    document.getElementById('ctaText').textContent =
+      `En servicios founder-led, el sistema se construye para que el negocio no dependa de tu presencia — y valga más el día que quieras delegar, escalar o vender. Si querés ver cómo se ve eso en tu caso, hablemos 30 minutos.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Agendar llamada de 30 min →';
+    btn.style.cssText = 'background:#d97706;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://calendly.com/ignacio-vdtransform/30min';
+  } else if (annual >= 80000) {
+    cb.style.cssText = 'background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);border-radius:12px;padding:22px 24px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#f87171">🚨 PRÓXIMO PASO</span>`;
+    document.getElementById('ctaTitle').textContent = `${fmtUSD(annual)}/año es una conversación que vale la pena tener.`;
+    document.getElementById('ctaText').textContent =
+      `El Programa Vértice Sprint trabaja exactamente este problema: estructura de decisiones, autonomía del equipo y continuidad operativa en 90 días. Una llamada de 30 minutos para ver si aplica a tu caso.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Agendar llamada de 30 min →';
+    btn.style.cssText = 'background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://calendly.com/ignacio-vdtransform/30min';
+  } else if (annual >= 30000) {
+    cb.style.cssText = 'background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.22);border-radius:12px;padding:22px 24px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#fbbf24">📋 HAY MÁS POR DESCUBRIR</span>`;
+    document.getElementById('ctaTitle').textContent = 'La dependencia es uno de tres costos ocultos.';
+    document.getElementById('ctaText').textContent =
+      `En los próximos posts publico Herramienta 2: cuánto margen estás dejando sobre la mesa sin saberlo. Anotate para recibirla primero.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Anotarme en la lista →';
+    btn.style.cssText = 'background:#d97706;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://vdtransform.com/waitlist';
+  } else {
+    cb.style.cssText = 'background:rgba(22,163,74,0.07);border:1px solid rgba(22,163,74,0.2);border-radius:12px;padding:22px 24px;';
+    document.getElementById('ctaTag').innerHTML = `<span style="color:#4ade80">✅ EMPRESA BIEN ESTRUCTURADA</span>`;
+    document.getElementById('ctaTitle').textContent = 'Tu nivel de dependencia es bajo. El próximo paso es la escala.';
+    document.getElementById('ctaText').textContent =
+      `Publicamos 3 veces por semana sobre operaciones y crecimiento para dueños de empresa. Seguí el contenido.`;
+    const btn = document.getElementById('ctaBtn');
+    btn.textContent = 'Seguir a Ignacio en LinkedIn →';
+    btn.style.cssText = 'background:#16a34a;color:#fff;display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:7px;font-weight:700;font-size:14px;text-decoration:none;';
+    btn.href = 'https://www.linkedin.com/in/ignaciovidaldominguez/';
+  }
+}
+</script>
+</body>
+</html>
